@@ -4,6 +4,7 @@ import yaml
 from pathlib import Path
 import re
 import os
+import glob
 import sys
 from utils import utils
 
@@ -31,9 +32,15 @@ now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 test_file = OUTPUT + "test/" + now + ".txt"
 
 
+# biolegend reads
+hash_dir = config['hashing_read_dir']
+hash_samples = [os.path.basename(x).replace('.fastq.gz', '') for x in glob.glob(hash_dir + "*.fastq.gz")]
+
+
 ################ RULE FILES ################
 include: "rules/reference.smk"
 include: "rules/demultiplex.smk"
+include: "rules/hashing.smk"
 include: "rules/core.smk"
 include: "rules/anndata.smk"
 include: "rules/isoquant.smk"
@@ -59,15 +66,38 @@ rule all:
         OUTPUT + 'merged/merged.bamstats',
         OUTPUT + 'merged/merged.counts.txt',
         OUTPUT + 'scanpy/raw.anndata.h5ad',
+        OUTPUT + "reports/anndata/library_summary.txt",
+    
+
+rule isoforms:
+    input:
         expand(OUTPUT + "isoquant/{sid}.done", sid=samples),
         OUTPUT + "isoquant/annotations.db",
         OUTPUT + "isoquant_prepared/gene_counts.csv",
         OUTPUT + "isoquant_prepared/transcript_counts.csv",
         OUTPUT + "isoquant_prepared/isoforms.csv",
+
+
+rule rna_velocity:
+    input:
         OUTPUT + 'velocyto/merged.tagged.bam',
         OUTPUT + 'velocyto/run_velocyto.done',
 
-        
+
+rule hashing:
+    input:
+        expand(OUTPUT + "hash_fastq/{sid}.fastq.gz", sid=hash_samples),
+        OUTPUT + "hash_reference/hash.fasta",
+        OUTPUT + "hash_reference/barcode_whitelist.txt",
+        OUTPUT + "hash_reference/barcode_translation.txt",
+        OUTPUT + "reports/nanoplexer/hashing_report.txt", # demutliplex with nanoplexer
+        OUTPUT + "hash_reference/detected_barcodes.fasta",
+        OUTPUT + "hash_reference/barcode_mapping.csv",
+        OUTPUT + "hash_reference/translated_barcodes.fasta",
+        OUTPUT + "hash_reference/translated_barcodes.fasta.amb",
+        expand(OUTPUT + "hash_alignment/{sid}.bam", sid=tag_list),
+        expand(OUTPUT + "reports/hash_count/{sid}.csv", sid=tag_list),
+        OUTPUT + "reports/hash_map/hashmap.csv",
 
 rule test:
     output:
