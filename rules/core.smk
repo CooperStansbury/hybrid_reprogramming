@@ -53,7 +53,7 @@ rule bamtools_stats:
     threads:
         int(config['threads']) // 4
     wrapper:
-        "v2.1.1/bio/bamtools/stats"
+        "v5.5.2/bio/bamtools/stats"
 
 
 rule tag_bam:
@@ -138,7 +138,7 @@ rule bamtools_stats_merged:
     threads:
         int(config['threads']) // 4
     wrapper:
-        "v2.1.1/bio/bamtools/stats"
+        "v5.5.2/bio/bamtools/stats"
 
 
 rule htseq_count:

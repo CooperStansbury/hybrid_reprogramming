@@ -1,4 +1,4 @@
-output_path: "/scratch/indikar_root/indikar1/shared_data/hybrid_reprogramming/"
+output_path: "/scratch/indikar_root/indikar1/shared_data/hybrid_library_2/"
 inputs: "config/fastq_paths.txt"
 hashing_read_dir: "/nfs/turbo/umms-indikar/shared/projects/hybrid_reprogramming/data/fastq/biolegend_library/2024-12-06-TSB-1N-2T-primers/fastq_pass/"
 hash_sequences: "config/hashing_sequences.fasta"
